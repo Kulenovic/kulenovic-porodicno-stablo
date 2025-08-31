@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="bs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prikupljanje Podataka za Porodično Stablo</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        
+        .container {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 3px solid #667eea;
+        }
+        
+        .header h1 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+            font-size: 2.2em;
+        }
+        
+        .header p {
+            color: #7f8c8d;
+            font-size: 1.1em;
+            margin: 5px 0;
+        }
+        
+        .form-section {
+            margin-bottom: 25px;
+            padding: 20px;
+            border-left: 4px solid #667eea;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+        
+        .form-section h3 {
+            color: #2c3e50;
+            margin-top: 0;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+        
+        .form-row {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+        
+        .form-group {
+            flex: 1;
+            min-width: 200px;
+        }
+        
+        .form-group.full-width {
+            flex: 100%;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: #34495e;
+            font-weight: 500;
+        }
+        
+        input, select, textarea {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #e0e0e0;
+            border-radius: 6px;
+            font-size: 16px;
+            transition: border-color 0.3s ease;
+            box-sizing: border-box;
+        }
+        
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 5px rgba(102, 126, 234, 0.3);
+        }
+        
+        textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+        
+        .add-person-btn, .export-btn {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 500;
+            margin: 10px 5px;
+            transition: transform 0.2s ease;
+        }
+        
+        .add-person-btn:hover, .export-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        
+        .person-entry {
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 15px 0;
+            background: white;
+            position: relative;
+        }
+        
+        .person-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .person-number {
+            background: #667eea;
+            color: white;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-weight: bold;
+        }
+        
+        .remove-btn {
+            background: #e74c3c;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        
+        .instructions {
+            background: #e8f4fd;
+            border: 1px solid #b3d9ff;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 25px;
+        }
+        
+        .instructions h3 {
+            color: #2c3e50;
+            margin-top: 0;
+        }
+        
+        .instructions ul {
+            margin: 10px 0;
+            padding-left: 20px;
+        }
+        
+        .instructions li {
+            margin-bottom: 5px;
+            color: #34495e;
+        }
+        
+        .data-display {
+            margin-top: 30px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border: 2px solid #e0e0e0;
+        }
+        
+        .data-display h3 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+        }
+        
+        #collected-data {
+            background: white;
+            padding: 15px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            white-space: pre-wrap;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🌳 Kulenović Porodično Stablo</h1>
+            <p>Čuvanje Naše Porodice kroz Zajedničke Uspomene</p>
+            <p><em>Molimo vas unesite informacije o članovima naše porodice koje znate</em></p>
+        </div>
+        
+        <div class="instructions">
+            <h3>📝 Uputstvo za Doprinošenje</h3>
+            <ul>
+                <li><strong>Dodajte po jedan unos za svakog člana porodice</strong> - uključite sebe, roditelje, djedove i bake, braću i sestre, itd.</li>
+                <li><strong>Popunite koliko znate</strong> - čak i djelimične informacije su korisne</li>
+                <li><strong>Koristite dosljedne formate imena</strong> - uključite djevojačka prezimena u zagradama ako znate</li>
+                <li><strong>Za datume:</strong> Koristite format DD/MM/GGGG ili samo godinu ako je to sve što znate</li>
+                <li><strong>Za mjesta:</strong> Budite što precizniji (selo, grad, krajina)</li>
+                <li><strong>Uključite priče ili bilješke</strong> - one pomažu potvrditi veze i dodaju bogatstvo</li>
+            </ul>
+        </div>
+        
+        <div id="form-container">
+            <!-- Unosi osoba će biti dodani ovdje -->
+        </div>
+        
+        <div style="text-align: center; margin: 20px 0;">
+            <button class="add-person-btn" onclick="addPersonEntry()">+ Dodaj Člana Porodice</button>
+            <button class="export-btn" onclick="exportData()">📊 Izvezi Podatke</button>
+        </div>
+        
+        <div class="data-display">
+            <h3>📋 Prikupljeni Podaci (za kopiranje/dijeljenje)</h3>
+            <textarea id="collected-data" readonly placeholder="Vaši uneseni podaci će se pojaviti ovdje..."></textarea>
+        </div>
+    </div>
+
+    <script>
+        let personCount = 0;
+        let familyData = [];
+
+        function addPersonEntry() {
+            personCount++;
+            const container = document.getElementById('form-container');
+            
+            const personDiv = document.createElement('div');
+            personDiv.className = 'person-entry';
+            personDiv.id = `person-${personCount}`;
+            
+            personDiv.innerHTML = `
+                <div class="person-header">
+                    <span class="person-number">Osoba ${personCount}</span>
+                    <button class="remove-btn" onclick="removePerson(${personCount})">Ukloni</button>
+                </div>
+                
+                <div class="form-section">
+                    <h3>👤 Lični Podaci</h3>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="first-name-${personCount}">Ime *</label>
+                            <input type="text" id="first-name-${personCount}" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="last-name-${personCount}">Prezime *</label>
+                            <input type="text" id="last-name-${personCount}" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="maiden-name-${personCount}">Djevojačko Prezime (ako se primjenjuje)</label>
+                            <input type="text" id="maiden-name-${personCount}">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="gender-${personCount}">Pol</label>
+                            <select id="gender-${personCount}">
+                                <option value="">Odaberite...</option>
+                                <option value="Muški">Muški</option>
+                                <option value="Ženski">Ženski</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="birth-date-${personCount}">Datum Rođenja (DD/MM/GGGG)</label>
+                            <input type="text" id="birth-date-${personCount}" placeholder="npr. 15/03/1945 ili samo 1945">
+                        </div>
+                        <div class="form-group">
+                            <label for="death-date-${personCount}">Datum Smrti (ako se primjenjuje)</label>
+                            <input type="text" id="death-date-${personCount}" placeholder="npr. 22/12/2010 ili samo 2010">
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-section">
+                    <h3>👨‍👩‍👧‍👦 Porodične Veze</h3>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="father-name-${personCount}">Ime i Prezime Oca</label>
+                            <input type="text" id="father-name-${personCount}">
+                        </div>
+                        <div class="form-group">
+                            <label for="mother-name-${personCount}">Ime i Prezime Majke (djevojačko ime)</label>
+                            <input type="text" id="mother-name-${personCount}">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group full-width">
+                            <label for="spouse-name-${personCount}">Ime Supružnika/Supruge</label>
+                            <input type="text" id="spouse-name-${personCount}" placeholder="Uključite djevojačko ime ako je poznato">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group full-width">
+                            <label for="children-names-${personCount}">Imena Djece</label>
+                            <textarea id="children-names-${personCount}" placeholder="Navedite svu djecu, jedno po redu"></textarea>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-section">
+                    <h3>📍 Informacije o Mjestu</h3>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="birth-place-${personCount}">Mjesto Rođenja</label>
+                            <input type="text" id="birth-place-${personCount}" placeholder="Selo, Grad, Krajina, Bosna">
+                        </div>
+                        <div class="form-group">
+                            <label for="residence-${personCount}">Posljednje Poznato Prebivalište</label>
+                            <input type="text" id="residence-${personCount}">
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-section">
+                    <h3>📚 Dodatne Informacije</h3>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="occupation-${personCount}">Zanimanje/Posao</label>
+                            <input type="text" id="occupation-${personCount}">
+                        </div>
+                        <div class="form-group">
+                            <label for="nickname-${personCount}">Nadimak/Poznat kao</label>
+                            <input type="text" id="nickname-${personCount}">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group full-width">
+                            <label for="notes-${personCount}">Priče, Bilješke ili Dodatni Detalji</label>
+                            <textarea id="notes-${personCount}" placeholder="Bilo koje priče, karakteristične osobine, ili druge informacije koje bi mogle pomoći identificirati ovu osobu ili potvrditi porodične veze"></textarea>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            container.appendChild(personDiv);
+            updateDataDisplay();
+        }
+
+        function removePerson(id) {
+            const personDiv = document.getElementById(`person-${id}`);
+            if (personDiv) {
+                personDiv.remove();
+                updateDataDisplay();
+            }
+        }
+
+        function collectFormData() {
+            const data = [];
+            const personEntries = document.querySelectorAll('.person-entry');
+            
+            personEntries.forEach(entry => {
+                const id = entry.id.split('-')[1];
+                const personData = {
+                    firstName: document.getElementById(`first-name-${id}`)?.value || '',
+                    lastName: document.getElementById(`last-name-${id}`)?.value || '',
+                    maidenName: document.getElementById(`maiden-name-${id}`)?.value || '',
+                    gender: document.getElementById(`gender-${id}`)?.value || '',
+                    birthDate: document.getElementById(`birth-date-${id}`)?.value || '',
+                    deathDate: document.getElementById(`death-date-${id}`)?.value || '',
+                    fatherName: document.getElementById(`father-name-${id}`)?.value || '',
+                    motherName: document.getElementById(`mother-name-${id}`)?.value || '',
+                    spouseName: document.getElementById(`spouse-name-${id}`)?.value || '',
+                    childrenNames: document.getElementById(`children-names-${id}`)?.value || '',
+                    birthPlace: document.getElementById(`birth-place-${id}`)?.value || '',
+                    residence: document.getElementById(`residence-${id}`)?.value || '',
+                    occupation: document.getElementById(`occupation-${id}`)?.value || '',
+                    nickname: document.getElementById(`nickname-${id}`)?.value || '',
+                    notes: document.getElementById(`notes-${id}`)?.value || ''
+                };
+                
+                // Dodaj samo ako je barem ime popunjeno
+                if (personData.firstName || personData.lastName) {
+                    data.push(personData);
+                }
+            });
+            
+            return data;
+        }
+
+        function updateDataDisplay() {
+            const data = collectFormData();
+            familyData = data;
+            
+            if (data.length === 0) {
+                document.getElementById('collected-data').value = 'Još nema unesenih podataka...';
+                return;
+            }
+            
+            let output = 'PRIKUPLJANJE PODATAKA ZA PORODIČNO STABLO\n';
+            output += '=========================================\n\n';
+            
+            data.forEach((person, index) => {
+                output += `OSOBA ${index + 1}:\n`;
+                output += `Ime: ${person.firstName} ${person.lastName}`;
+                if (person.maidenName) output += ` (djevojačko: ${person.maidenName})`;
+                output += '\n';
+                
+                if (person.nickname) output += `Poznat kao: ${person.nickname}\n`;
+                if (person.gender) output += `Pol: ${person.gender}\n`;
+                if (person.birthDate) output += `Rođen: ${person.birthDate}`;
+                if (person.birthPlace) output += ` u ${person.birthPlace}`;
+                output += '\n';
+                
+                if (person.deathDate) output += `Umro: ${person.deathDate}\n`;
+                if (person.residence) output += `Živio: ${person.residence}\n`;
+                if (person.occupation) output += `Zanimanje: ${person.occupation}\n`;
+                
+                output += 'Porodica:\n';
+                if (person.fatherName) output += `  Otac: ${person.fatherName}\n`;
+                if (person.motherName) output += `  Majka: ${person.motherName}\n`;
+                if (person.spouseName) output += `  Supružnik: ${person.spouseName}\n`;
+                if (person.childrenNames) {
+                    output += `  Djeca: ${person.childrenNames.replace(/\n/g, ', ')}\n`;
+                }
+                
+                if (person.notes) output += `Bilješke: ${person.notes}\n`;
+                output += '\n' + '-'.repeat(40) + '\n\n';
+            });
+            
+            document.getElementById('collected-data').value = output;
+        }
+
+        function exportData() {
+            const data = collectFormData();
+            if (data.length === 0) {
+                alert('Molimo vas prvo unesite podatke o porodici!');
+                return;
+            }
+            
+            // Kreiraj CSV format
+            let csv = 'Ime,Prezime,Djevojačko Prezime,Pol,Datum Rođenja,Datum Smrti,Ime Oca,Ime Majke,Ime Supružnika,Imena Djece,Mjesto Rođenja,Prebivalište,Zanimanje,Nadimak,Bilješke\n';
+            
+            data.forEach(person => {
+                const row = [
+                    person.firstName,
+                    person.lastName,
+                    person.maidenName,
+                    person.gender,
+                    person.birthDate,
+                    person.deathDate,
+                    person.fatherName,
+                    person.motherName,
+                    person.spouseName,
+                    person.childrenNames.replace(/\n/g, ' | '),
+                    person.birthPlace,
+                    person.residence,
+                    person.occupation,
+                    person.nickname,
+                    person.notes.replace(/\n/g, ' | ')
+                ].map(field => `"${field}"`).join(',');
+                
+                csv += row + '\n';
+            });
+            
+            // Preuzmi CSV fajl
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'kulenovic_porodicno_stablo_podaci.csv';
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        // Dodaj event listenere za ažuriranje prikaza kada se polja mijenjaju
+        document.addEventListener('input', function(e) {
+            if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.tagName === 'SELECT') {
+                setTimeout(updateDataDisplay, 100);
+            }
+        });
+
+        // Inicijalizuj sa jednim unosom osobe
+        addPersonEntry();
+    </script>
+</body>
+</html>
